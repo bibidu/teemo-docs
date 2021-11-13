@@ -1,25 +1,13 @@
 {
-  "name": "teemo-gitbook",
+  "name": "teemo-docs",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
+  "license": "MIT",
   "scripts": {
-    "start": "gitbook serve",
-    "build": "gitbook build . ./public"
+    "start": "vuepress dev docs",
+    "build": "vuepress build docs"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bibidu/teemo-gitbook.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/bibidu/teemo-gitbook/issues"
-  },
-  "homepage": "https://github.com/bibidu/teemo-gitbook#readme",
-  "dependencies": {
-    "gitbook": "^2.6.9",
-    "gitbook-cli": "^2.3.2"
+  "devDependencies": {
+    "vuepress": "^1.8.2"
   }
 }
