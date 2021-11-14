@@ -100,8 +100,11 @@ App({
 如果想使用这个 云端组件:
 
 ```html
-<teemo-component namespace="myBtn" bundleName="my-btn" props="{{ {value: 'Hello World!'} }}" />
-
+<teemo-component 
+  namespace="myBtn" 
+  bundleName="my-btn" 
+  props="{{ {value: 'Hello World!'} }}" 
+/>
 ```
 
 
