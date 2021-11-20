@@ -18,10 +18,11 @@ npm init -y
 ```
 
 - 在 `package.json` 添加 scripts:
-```
+```json
 {
   "scripts": {
-    "dev": "nodemon _teemo_/cli.js"
+    "dev": "NODE_ENV=development nodemon _teemo_/cli.js",
+    "prod": "NODE_ENV=production nodemon _teemo_/cli.js"
   }
 }
 ```
@@ -30,33 +31,43 @@ npm init -y
 
 ```javascript
 const { join } = require("path");
-
-const cli = require("/path/to/your/teemo/packages/teemo-cli");
+const cli = require("/Users/bibidu/Desktop/projects/teemo/packages/teemo-cli");
 
 const srcPath = join(__dirname, "..");
 const distPath = join(__dirname, "..", "..", "dist");
 const inSrc = (filepath) => join(srcPath, filepath);
 
 const serverConfig = cli({
+  mode: process.env.NODE_ENV,
+  requestScope: '@wm/',
+  customServerConfig: {
+    baseURL: "https://www.dczblindbox.cn",
+  },
   miniAppEntryDir: srcPath,
   miniAppOutputDir: distPath,
-  ignores: [__dirname, inSrc("nodemon.json"), inSrc("package.json")],
+  ignores: [
+    __dirname,
+    inSrc("nodemon.json"),
+    inSrc("package.json"),
+  ],
 });
+
+serverConfig &&
+  console.log(`[Teemo] Server opening on "${serverConfig.baseURL}".`);
 ```
 
 
 下面需要引入 `teemo` 提供的各种能力.
 
-- teemo-component
-
-`teemo-component` 是 `teemo` 提供的动态化组件.
-
 需要在 `app.json` 进行配置:
 
 ```javascript
 {
+  "pages": [
+    "@teemo/hosts/teemo-page"
+  ],
   "usingComponents":{
-    "teemo-component": "@teemo/components/teemo-component/index"
+    "teemo-component": "@teemo/hosts/teemo-component"
   }
 }
 ```
@@ -76,10 +87,24 @@ App({
 
 ```
 
-如果想要将组件放到云端，需要如下配置:
+
+## teemo-page
+`teemo-page` 是动态化的页面容器. 通过 `teemo-page` 可以将编写的原生页面上传至云端而不用占据小程序的体积，另外可以**实时发版**。
+
+### 创建方式
+和原生页面的区别是，需要在页面文件夹目录下新建 `teemo.json` 文件:
+
+```json
+{
+  "type": "page",
+  "bundleName": "one-page"
+}
+```
+
+新建后的目录如下:
 
 ```javascript
-- button
+- one-page
   - index.js
   - index.json
   - index.wxml
@@ -88,21 +113,49 @@ App({
   - teemo.json
 ```
 
-这里 `teemo.json` 是用来标识这个云端组件的一些信息:
+### 使用方式
+对于 `teemo` 来说，会找寻 `teemo.json` 中 `bundleName=main-page` 的页面来作为首页，所以项目中必须存在这个页面.
 
+如果要跳转到其他动态化页面，需要如下使用:
 ```javascript
+wx.navigateTo({
+  url: "/@teemo/hosts/teemo-page?bundleName=factory",
+});
+```
+
+如上就跳转到了 `bundleName=factory` 的页面.
+
+## teemo-component
+`teemo-component` 是动态化的组件容器. 通过 `teemo-component` 可以将编写的原生页面上传至云端而不用占据小程序的体积，另外可以**实时发版**。
+
+### 创建方式
+和原生组件的区别是，需要在组件文件夹目录下新建 `teemo.json` 文件:
+
+```json
 {
   "type": "component",
-  "bundleName": "my-button"
+  "bundleName": "one-component"
 }
 ```
 
-如果想使用这个 云端组件:
+新建后的目录如下:
 
+```javascript
+- one-component
+  - index.js
+  - index.json
+  - index.wxml
+  - index.wxss
+
+  - teemo.json
+```
+
+
+### 使用方式
 ```html
 <teemo-component 
-  namespace="myBtn" 
-  bundleName="my-btn" 
+  namespace="one-component" 
+  bundleName="one-component" 
   props="{{ {value: 'Hello World!'} }}" 
 />
 ```
